@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piu Bella — Pizzaria Artesanal · Londrina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --char:    #1a1108;
+  --wood:    #2e1e0e;
+  --tomato:  #c23b18;
+  --tomato2: #a02e10;
+  --flour:   #f5edda;
+  --parch:   #ede0c4;
+  --parch2:  #e2d4b2;
+  --ochre:   #c47c14;
+  --ochre2:  #dfa030;
+  --muted:   #7a6a52;
+  --muted2:  #a0906e;
+  --border:  rgba(26,17,8,.12);
+  --border-l:rgba(245,237,218,.1);
+  --fh: 'Playfair Display', Georgia, serif;
+  --fb: 'DM Sans', system-ui, sans-serif;
+}
+
+body {
+  background: var(--flour);
+  color: var(--char);
+  font-family: var(--fb);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+
+/* ══════════════════════════════════
+   NAV — sempre horizontal, nunca muda de direção
+══════════════════════════════════ */
+#nav {
+  position: fixed;
+  z-index: 800;
+  top: 0; left: 0; right: 0; width: 100%;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 52px;
+  background: rgba(237,224,196,.93);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(26,17,8,.08);
+  transition:
+    top .52s cubic-bezier(.77,0,.18,1),
+    left .52s cubic-bezier(.77,0,.18,1),
+    right .52s cubic-bezier(.77,0,.18,1),
+    width .52s cubic-bezier(.77,0,.18,1),
+    height .52s cubic-bezier(.77,0,.18,1),
+    border-radius .52s cubic-bezier(.77,0,.18,1),
+    padding .52s cubic-bezier(.77,0,.18,1),
+    background .4s ease,
+    box-shadow .4s ease;
+}
+
+/* pill flutuante ao scrollar */
+#nav.stuck {
+  top: 10px; left: 44px; right: 44px;
+  width: calc(100% - 88px); height: 54px;
+  padding: 0 26px;
+  background: rgba(237,224,196,.5);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255,255,255,.38);
+  border-radius: 50px;
+  box-shadow: 0 8px 28px rgba(26,17,8,.10), inset 0 1px 0 rgba(255,255,255,.5);
+}
+
+/* nav encolhe para a esquerda quando painel abre */
+#nav.panel-open {
+  right: 328px;
+  width: calc(100% - 342px);
+  border-radius: 14px;
+  top: 14px; height: 50px;
+  padding: 0 20px;
+  background: rgba(237,224,196,.96);
+  border: 1px solid rgba(26,17,8,.10);
+  box-shadow: 0 6px 20px rgba(26,17,8,.08);
+  border-bottom: none;
+}
+
+/* Logo */
+.nav-logo {
+  font-family: var(--fh); font-weight: 900; font-size: 22px;
+  letter-spacing: -.025em; color: var(--char); text-decoration: none;
+  display: flex; align-items: baseline; gap: 7px;
+  flex-shrink: 0; white-space: nowrap;
+}
+.nav-logo-since {
+  font-size: 10px; font-weight: 300; font-style: italic;
+  letter-spacing: .06em; color: var(--tomato);
+}
+
+/* Desktop links */
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  font-size: 12px; font-weight: 400; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); text-decoration: none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--char); }
+
+/* Desktop CTA */
+.nav-cta {
+  padding: 10px 22px; background: var(--tomato); color: var(--flour);
+  font-size: 11px; font-weight: 500; letter-spacing: .13em;
+  text-transform: uppercase; text-decoration: none; border-radius: 40px;
+  transition: background .25s; flex-shrink: 0;
+}
+.nav-cta:hover { background: var(--tomato2); }
+
+/* Hamburger */
+.ham {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: flex-end;
+  gap: 5px; background: none; border: none;
+  padding: 8px 8px 8px 16px; cursor: pointer; flex-shrink: 0;
+}
+.ham span {
+  display: block; height: 1.5px; background: var(--char);
+  border-radius: 2px;
+  transition: transform .42s cubic-bezier(.77,0,.18,1), opacity .25s, width .3s;
+  transform-origin: right center;
+}
+.ham span:nth-child(1) { width: 22px; }
+.ham span:nth-child(2) { width: 14px; }
+.ham span:nth-child(3) { width: 22px; }
+.ham.active span:nth-child(1) { transform: translateY(6.5px) rotate(-45deg); }
+.ham.active span:nth-child(2) { opacity: 0; width: 0; }
+.ham.active span:nth-child(3) { transform: translateY(-6.5px) rotate(45deg); }
+
+/* ══════════════════════════════════
+   PAINEL LATERAL — elemento separado
+══════════════════════════════════ */
+#side-panel {
+  position: fixed;
+  z-index: 810;
+  top: 14px;
+  right: -320px;       /* começa fora da tela à direita */
+  width: 290px;
+  height: auto;
+  max-height: calc(100dvh - 28px);
+  border-radius: 18px;
+  background: var(--flour);
+  border: 1px solid rgba(26,17,8,.10);
+  box-shadow: 0 24px 60px rgba(26,17,8,.20), inset 0 1px 0 rgba(255,255,255,.8);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 20px;
+  overflow: hidden;
+  /* Desliza da direita */
+  transition: right .52s cubic-bezier(.77,0,.18,1), opacity .35s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+#side-panel.open {
+  right: 14px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Topo do painel: logo + fechar */
+.sp-toprow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(26,17,8,.09);
+  flex-shrink: 0;
+}
+.sp-logo {
+  font-family: var(--fh); font-weight: 900; font-size: 18px;
+  letter-spacing: -.02em; color: var(--char); text-decoration: none;
+  display: flex; align-items: baseline; gap: 5px;
+}
+.sp-logo-since {
+  font-size: 9px; font-weight: 300; font-style: italic;
+  letter-spacing: .06em; color: var(--tomato);
+}
+.sp-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid rgba(26,17,8,.13); background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 13px; flex-shrink: 0;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.sp-close:hover { background: var(--tomato); color: #fff; border-color: var(--tomato); }
+
+/* Section label */
+.sp-label {
+  font-size: 9px; font-weight: 500; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--muted2);
+  margin: 11px 0 6px; flex-shrink: 0;
+}
+
+/* Nav links */
+.sp-nav { display: flex; flex-direction: column; flex-shrink: 0; }
+.sp-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(26,17,8,.07);
+  font-family: var(--fh); font-size: 17px; font-weight: 700;
+  letter-spacing: -.02em; color: var(--char); text-decoration: none;
+  transition: color .18s, padding-left .2s;
+}
+.sp-link:last-child { border-bottom: none; }
+.sp-link:hover { color: var(--tomato); padding-left: 3px; }
+.sp-arr {
+  font-size: 11px; color: var(--muted2);
+  opacity: 0; transform: translateX(-4px);
+  transition: opacity .15s, transform .2s, color .15s;
+}
+.sp-link:hover .sp-arr { opacity: 1; transform: none; color: var(--tomato); }
+
+/* Info block */
+.sp-info {
+  background: var(--parch); border-radius: 9px;
+  padding: 9px 12px; flex-shrink: 0; margin-top: 9px;
+}
+.sp-info-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid rgba(26,17,8,.07);
+}
+.sp-info-row:first-child { padding-top: 0; }
+.sp-info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.sp-ico { font-size: 11px; flex-shrink: 0; margin-top: 1px; opacity: .6; }
+.sp-lbl { font-size: 9px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase; color: var(--muted2); margin-bottom: 1px; }
+.sp-val { font-size: 12px; color: var(--char); line-height: 1.35; }
+.sp-val a { color: inherit; text-decoration: none; }
+.sp-val a:hover { color: var(--tomato); }
+
+/* CTA button */
+.sp-cta {
+  display: block; margin-top: 10px;
+  padding: 12px 0; background: var(--tomato); color: var(--flour);
+  font-size: 11px; font-weight: 500; letter-spacing: .15em;
+  text-transform: uppercase; text-decoration: none;
+  border-radius: 9px; text-align: center;
+  transition: background .2s; flex-shrink: 0;
+}
+.sp-cta:hover { background: var(--tomato2); }
+
+/* Stagger: items entram em cascata */
+#side-panel .sp-toprow,
+#side-panel .sp-label,
+#side-panel .sp-nav,
+#side-panel .sp-info,
+#side-panel .sp-cta {
+  opacity: 0; transform: translateX(12px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+#side-panel.open .sp-toprow { opacity:1; transform:none; transition-delay:.06s; }
+#side-panel.open .sp-label:first-of-type { opacity:1; transform:none; transition-delay:.1s; }
+#side-panel.open .sp-nav { opacity:1; transform:none; transition-delay:.14s; }
+#side-panel.open .sp-label:last-of-type { opacity:1; transform:none; transition-delay:.19s; }
+#side-panel.open .sp-info { opacity:1; transform:none; transition-delay:.22s; }
+#side-panel.open .sp-cta { opacity:1; transform:none; transition-delay:.27s; }
+
+/* ══════════════════════════════════
+   OVERLAY
+══════════════════════════════════ */
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(26,17,8,.25);
+  backdrop-filter: blur(3px);
+  z-index: 790;
+  opacity: 0; pointer-events: none;
+  transition: opacity .4s ease;
+}
+#overlay.active { opacity: 1; pointer-events: auto; }
+
+/* nav dark mode */
+#nav.light { background: rgba(26,17,8,.88) !important; }
+#nav.light .nav-logo { color: var(--flour) !important; }
+#nav.light .nav-links a { color: rgba(237,224,196,.6) !important; }
+#nav.light .nav-cta { background: var(--flour); color: var(--char); }
+#nav.light .ham span { background: var(--flour) !important; }
+body.panel-active .wa { opacity: 0; pointer-events: none; }
+
+/* WA */
+.wa { position: fixed; bottom: 32px; right: 32px; z-index: 700; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 28px rgba(37,211,102,.4); text-decoration: none; transition: transform .3s, opacity .3s; }
+.wa:hover { transform: scale(1.1); }
+.wa svg { width: 28px; height: 28px; fill: white; }
+
+/* SCROLL REVEAL */
+.sr { opacity: 0; transform: translateY(28px); transition: opacity .75s ease, transform .75s ease; }
+.sr.v { opacity: 1; transform: none; }
+.d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s} .d4{transition-delay:.4s}
+
+/* ══════════════════════════════════
+   HERO
+══════════════════════════════════ */
+#hero { min-height: 100vh; display: grid; grid-template-columns: 52% 48%; overflow: hidden; }
+.hero-l { padding: 160px 60px 80px; background: var(--flour); display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
+.hero-eyebrow { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; opacity: 0; animation: rise .9s ease forwards .2s; }
+.ey-line { width: 36px; height: 2px; background: var(--tomato); flex-shrink: 0; }
+.ey-text { font-size: 12px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--tomato); }
+.hero-h1 { font-family: var(--fh); font-size: clamp(72px, 7.8vw, 130px); font-weight: 900; line-height: .88; letter-spacing: -.035em; color: var(--char); opacity: 0; animation: rise .9s ease forwards .35s; }
+.hero-h1 em { display: block; font-style: italic; font-weight: 300; font-size: .72em; color: var(--tomato); margin-top: 8px; }
+.hero-hr { width: 100%; height: 1px; background: var(--border); margin: 42px 0; opacity: 0; animation: rise .8s ease forwards .5s; }
+.hero-p { font-size: 18px; font-weight: 300; line-height: 1.8; color: var(--muted); max-width: 420px; margin-bottom: 50px; opacity: 0; animation: rise .8s ease forwards .62s; }
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; opacity: 0; animation: rise .8s ease forwards .74s; }
+.btn-dark { padding: 17px 42px; background: var(--char); color: var(--flour); font-size: 13px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase; text-decoration: none; border-radius: 3px; transition: background .25s; }
+.btn-dark:hover { background: var(--tomato); }
+.btn-ghost { padding: 17px 34px; border: 1.5px solid rgba(26,17,8,.25); color: var(--char); font-size: 13px; font-weight: 400; letter-spacing: .13em; text-transform: uppercase; text-decoration: none; border-radius: 3px; transition: all .25s; }
+.btn-ghost:hover { background: var(--char); color: var(--flour); border-color: var(--char); }
+.hero-stats { display: flex; gap: 52px; margin-top: 68px; padding-top: 42px; border-top: 1px solid var(--border); opacity: 0; animation: rise .8s ease forwards .88s; }
+.st-val { font-family: var(--fh); font-size: 46px; font-weight: 700; line-height: 1; color: var(--char); }
+.st-key { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted2); margin-top: 7px; }
+.hero-r { position: relative; overflow: hidden; background: var(--wood); }
+.hero-bg-img { position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80&fit=crop'); background-size: cover; background-position: center; opacity: .45; }
+.hero-bg-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(30,14,6,.7) 0%, transparent 60%), linear-gradient(to top, rgba(30,14,6,.8) 0%, transparent 50%); }
+.hero-pizza-photo { position: absolute; z-index: 3; width: 72%; max-width: 520px; top: 50%; left: 50%; transform: translate(-52%, -50%) rotate(-14deg); filter: drop-shadow(0 32px 64px rgba(0,0,0,.55)); border-radius: 50%; overflow: hidden; aspect-ratio: 1; animation: pizzatilt 9s ease-in-out infinite; }
+.hero-pizza-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+@keyframes pizzatilt { 0%,100% { transform: translate(-52%,-50%) rotate(-14deg) scale(1); } 50% { transform: translate(-52%,-50%) rotate(-10deg) scale(1.03) translateY(-12px); } }
+.hero-r-label { position: absolute; bottom: 44px; right: 44px; z-index: 5; text-align: right; }
+.hero-r-label p { font-family: var(--fh); font-size: 14px; font-style: italic; color: rgba(245,237,218,.55); line-height: 1.55; }
+.badge-spin { position: absolute; top: 52px; right: 52px; z-index: 5; width: 92px; height: 92px; }
+.badge-spin svg { width: 100%; height: 100%; animation: spin 20s linear infinite; }
+.badge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--fh); font-size: 18px; font-weight: 900; color: var(--char); text-align: center; line-height: 1; pointer-events: none; }
+.badge-center small { font-size: 9px; letter-spacing: .1em; font-weight: 400; font-family: var(--fb); text-transform: uppercase; color: var(--wood); display: block; margin-top: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+/* TICKER */
+.ticker { background: var(--char); padding: 15px 0; overflow: hidden; white-space: nowrap; }
+.ticker-t { display: inline-flex; animation: tickmove 30s linear infinite; }
+@keyframes tickmove { to { transform: translateX(-50%); } }
+.tick { display: inline-flex; align-items: center; gap: 24px; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: rgba(237,224,196,.45); padding: 0 32px; font-weight: 400; }
+.tick b { color: var(--ochre2); font-weight: 400; }
+.tick-star { color: var(--tomato); font-size: 8px; }
+
+/* SHARED */
+.s-tag { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; color: var(--tomato); }
+.s-tag::before { content: ''; width: 26px; height: 2px; background: var(--tomato); flex-shrink: 0; }
+h2.s-h2 { font-family: var(--fh); font-size: clamp(44px, 4.8vw, 76px); font-weight: 900; line-height: .94; letter-spacing: -.03em; }
+h2.s-h2 em { font-style: italic; font-weight: 300; color: var(--tomato); }
+
+/* MENU */
+#menu { padding: 130px 60px; background: var(--parch); }
+.menu-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 72px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+.menu-note { font-family: var(--fh); font-size: 17px; font-style: italic; color: var(--muted); max-width: 300px; text-align: right; line-height: 1.5; }
+.menu-list { display: flex; flex-direction: column; gap: 3px; }
+.pizza-row { display: grid; grid-template-columns: 280px 1fr auto; align-items: stretch; background: var(--flour); transition: background .3s; overflow: hidden; min-height: 200px; }
+.pizza-row:hover { background: #fdf8ee; }
+.pizza-row-img { width: 280px; height: 100%; min-height: 200px; overflow: hidden; }
+.pizza-row-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; display: block; }
+.pizza-row:hover .pizza-row-img img { transform: scale(1.06); }
+.pizza-row-body { padding: 36px 44px; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+.pizza-row-tag { font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--tomato); margin-bottom: 10px; }
+.pizza-row-name { font-family: var(--fh); font-size: 30px; font-weight: 700; line-height: 1; color: var(--char); margin-bottom: 12px; letter-spacing: -.02em; }
+.pizza-row-desc { font-size: 15px; font-weight: 300; line-height: 1.7; color: var(--muted); max-width: 520px; }
+.pizza-row-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 5px 12px; background: var(--tomato); color: var(--flour); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; border-radius: 2px; width: fit-content; }
+.pizza-row-side { width: 180px; flex-shrink: 0; padding: 36px 32px; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; }
+.pizza-row-price { font-family: var(--fh); font-size: 32px; font-weight: 700; color: var(--ochre); line-height: 1; text-align: right; }
+.pizza-row-price small { display: block; font-size: 11px; font-weight: 400; font-style: italic; font-family: var(--fb); color: var(--muted2); margin-top: 4px; }
+.pizza-row-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; color: var(--muted); font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .25s; }
+.pizza-row:hover .pizza-row-btn { background: var(--tomato); border-color: var(--tomato); color: var(--flour); }
+.menu-mobile { display: none; flex-direction: column; gap: 3px; }
+.pizza-card-m { background: var(--flour); overflow: hidden; }
+.pizza-card-m-img { width: 100%; aspect-ratio: 16/9; overflow: hidden; }
+.pizza-card-m-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pizza-card-m-info { padding: 22px 20px; }
+.pizza-card-m-tag { font-size: 10px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--tomato); margin-bottom: 7px; }
+.pizza-card-m-name { font-family: var(--fh); font-size: 24px; font-weight: 700; color: var(--char); margin-bottom: 8px; line-height: 1.1; }
+.pizza-card-m-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.pizza-card-m-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.pizza-card-m-price { font-family: var(--fh); font-size: 26px; font-weight: 700; color: var(--ochre); }
+
+/* QUOTE */
+#quote { padding: 120px 60px; background: var(--tomato); text-align: center; position: relative; overflow: hidden; }
+#quote::before { content: '\201C'; font-family: var(--fh); font-size: 560px; font-weight: 900; line-height: .65; color: rgba(0,0,0,.065); position: absolute; top: -50px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+.q-text { font-family: var(--fh); font-size: clamp(30px, 4vw, 60px); font-style: italic; font-weight: 300; line-height: 1.28; color: var(--flour); max-width: 860px; margin: 0 auto 28px; position: relative; z-index: 1; }
+.q-src { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: rgba(245,237,218,.5); position: relative; z-index: 1; }
+
+/* STORY */
+#story { padding: 130px 60px; background: var(--flour); display: grid; grid-template-columns: 420px 1fr; gap: 110px; align-items: start; border-top: 1px solid var(--border); }
+.story-l { position: sticky; top: 110px; }
+.story-year-bg { font-family: var(--fh); font-size: 168px; font-weight: 900; line-height: .78; letter-spacing: -.05em; color: var(--tomato); opacity: .09; user-select: none; margin-bottom: -52px; }
+.story-head { position: relative; z-index: 1; }
+.story-h2 { font-family: var(--fh); font-size: clamp(38px, 4vw, 62px); font-weight: 900; line-height: 1; letter-spacing: -.025em; margin-top: 12px; }
+.story-photo { margin-top: 44px; position: relative; }
+.story-photo-frame { width: 100%; aspect-ratio: 4/3; overflow: hidden; border-radius: 2px; background: var(--parch2); }
+.story-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+.story-photo-cap { position: absolute; bottom: -18px; right: -18px; background: var(--ochre); color: var(--char); padding: 13px 20px; font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; border-radius: 2px; z-index: 2; }
+.story-intro { font-family: var(--fh); font-size: 25px; font-weight: 400; font-style: italic; line-height: 1.5; color: var(--char); margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px solid var(--border); }
+.story-body { font-size: 17px; font-weight: 300; line-height: 1.88; color: var(--muted); margin-bottom: 22px; }
+.story-body strong { font-weight: 500; color: var(--tomato); }
+.diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 52px; }
+.diff { padding: 30px 26px; background: var(--parch); border-left: 3px solid transparent; transition: border-color .3s, background .3s; }
+.diff:hover { border-color: var(--tomato); background: var(--parch2); }
+.diff-ico { font-size: 24px; margin-bottom: 13px; display: block; }
+.diff h4 { font-family: var(--fh); font-size: 18px; font-weight: 700; margin-bottom: 7px; }
+.diff p { font-size: 14px; line-height: 1.65; color: var(--muted); }
+
+/* REVIEWS */
+#reviews { padding: 130px 60px; background: var(--parch); }
+.reviews-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 68px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+.reviews-score { text-align: right; }
+.rs-num { font-family: var(--fh); font-size: 72px; font-weight: 900; line-height: 1; color: var(--ochre); letter-spacing: -.03em; }
+.rs-stars { color: var(--ochre); font-size: 17px; letter-spacing: 3px; margin: 6px 0; }
+.rs-label { font-size: 12px; color: var(--muted); letter-spacing: .08em; }
+.rv-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; }
+.rv { padding: 42px 36px; background: var(--flour); border-bottom: 3px solid transparent; transition: border-color .3s; }
+.rv:hover { border-color: var(--tomato); }
+.rv-stars { color: var(--ochre); font-size: 14px; letter-spacing: 3px; margin-bottom: 20px; }
+.rv-open { font-family: var(--fh); font-size: 60px; line-height: .5; color: var(--tomato); opacity: .3; display: block; margin-bottom: 14px; }
+.rv-text { font-size: 16px; font-weight: 300; line-height: 1.82; color: var(--char); margin-bottom: 34px; }
+.rv-footer { display: flex; align-items: center; gap: 14px; padding-top: 24px; border-top: 1px solid var(--border); }
+.rv-av { width: 44px; height: 44px; border-radius: 50%; background: var(--tomato); color: var(--flour); font-family: var(--fh); font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rv-name { font-size: 15px; font-weight: 500; }
+.rv-detail { font-size: 12px; color: var(--muted2); margin-top: 3px; }
+
+/* CTA */
+#cta { background: var(--char); display: grid; grid-template-columns: 1fr 1fr; }
+.cta-l { padding: 120px 60px; border-right: 1px solid var(--border-l); }
+.cta-l .s-tag { color: var(--ochre2); }
+.cta-l .s-tag::before { background: var(--ochre2); }
+.cta-h2 { font-family: var(--fh); font-size: clamp(48px, 5.5vw, 86px); font-weight: 900; line-height: .90; letter-spacing: -.035em; color: var(--flour); margin-top: 16px; margin-bottom: 28px; }
+.cta-h2 em { font-style: italic; font-weight: 300; color: var(--ochre2); }
+.cta-p { font-size: 17px; font-weight: 300; line-height: 1.8; color: rgba(237,224,196,.5); max-width: 420px; margin-bottom: 52px; }
+.cta-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-red { padding: 18px 48px; background: var(--tomato); color: var(--flour); font-size: 13px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-radius: 3px; transition: background .25s; }
+.btn-red:hover { background: var(--tomato2); }
+.btn-gl { padding: 18px 36px; border: 1.5px solid rgba(237,224,196,.18); color: rgba(237,224,196,.55); font-size: 13px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-radius: 3px; transition: all .25s; }
+.btn-gl:hover { border-color: rgba(237,224,196,.45); color: var(--flour); }
+.cta-r { padding: 120px 60px; }
+.info-row { padding: 26px 0; border-bottom: 1px solid rgba(237,224,196,.07); }
+.info-row:last-child { border-bottom: none; }
+.info-lbl { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ochre); margin-bottom: 10px; }
+.info-val { font-family: var(--fh); font-size: 22px; font-weight: 700; color: var(--flour); line-height: 1.35; }
+.info-val a { color: inherit; text-decoration: none; transition: color .25s; }
+.info-val a:hover { color: var(--ochre2); }
+.info-val small { display: block; font-size: 13px; opacity: .7; margin-top: 4px; }
+
+/* FOOTER */
+footer { background: var(--char); border-top: 1px solid var(--border-l); padding: 48px 60px; display: flex; align-items: center; justify-content: space-between; }
+.f-logo { font-family: var(--fh); font-size: 20px; font-weight: 900; color: var(--flour); text-decoration: none; }
+.f-logo span { color: var(--tomato); }
+.f-copy { font-size: 12px; color: rgba(237,224,196,.28); letter-spacing: .05em; }
+.f-link { font-size: 12px; color: var(--ochre); text-decoration: none; }
+.f-link:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media (max-width: 960px) {
+  #nav { padding: 0 20px; height: 58px; }
+  #nav.stuck { top: 8px; left: 14px; right: 14px; width: calc(100% - 28px); padding: 0 18px; height: 50px; }
+  #nav.panel-open { right: 318px; width: calc(100% - 332px); top: 14px; height: 46px; border-radius: 12px; padding: 0 16px; }
+  .nav-links, .nav-cta { display: none; }
+  .nav-logo { flex: 1; }
+  .ham { display: flex; }
+  #hero { grid-template-columns: 1fr; }
+  .hero-l { padding: 100px 24px 60px; }
+  .hero-r { min-height: 340px; }
+  .badge-spin { display: none; }
+  .hero-stats { gap: 28px; }
+  .st-val { font-size: 36px; }
+  #menu { padding: 80px 24px; }
+  .menu-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .menu-note { text-align: left; }
+  .menu-list { display: none; }
+  .menu-mobile { display: flex; }
+  #story { grid-template-columns: 1fr; gap: 48px; padding: 80px 24px; }
+  .story-l { position: static; }
+  .story-year-bg { font-size: 100px; margin-bottom: -32px; }
+  .diff-grid { grid-template-columns: 1fr; }
+  #quote { padding: 72px 24px; }
+  #reviews { padding: 80px 24px; }
+  .reviews-top { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .reviews-score { text-align: left; }
+  .rv-grid { grid-template-columns: 1fr; }
+  #cta { grid-template-columns: 1fr; }
+  .cta-l { padding: 72px 24px; border-right: none; border-bottom: 1px solid var(--border-l); }
+  .cta-r { padding: 52px 24px 72px; }
+  footer { flex-direction: column; gap: 14px; text-align: center; padding: 32px 24px; }
+}
+@media (min-width: 961px) {
+  .ham { display: none !important; }
+  #side-panel { display: none !important; }
+  #overlay { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="overlay"></div>
+
+<nav id="nav">
+  <a href="#hero" class="nav-logo">Piu Bella <span class="nav-logo-since">desde 2004</span></a>
+  <div class="nav-links">
+    <a href="#menu">Cardápio</a>
+    <a href="#story">Sobre nós</a>
+    <a href="#reviews">Avaliações</a>
+    <a href="#cta">Contato</a>
+  </div>
+  <a href="http://www.pratodigital.com.br/piubella" target="_blank" class="nav-cta">Peça Online</a>
+  <button class="ham" id="hamBtn" aria-label="Abrir menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="side-panel">
+  <div class="sp-toprow">
+    <a href="#hero" class="sp-logo" id="spLogoLink">Piu Bella <span class="sp-logo-since">desde 2004</span></a>
+    <button class="sp-close" id="spClose">✕</button>
+  </div>
+  <div class="sp-label">Navegação</div>
+  <nav class="sp-nav">
+    <a href="#menu"    class="sp-link">Cardápio       <span class="sp-arr">→</span></a>
+    <a href="#story"   class="sp-link">Nossa história <span class="sp-arr">→</span></a>
+    <a href="#reviews" class="sp-link">Avaliações     <span class="sp-arr">→</span></a>
+    <a href="#cta"     class="sp-link">Contato        <span class="sp-arr">→</span></a>
+  </nav>
+  <div class="sp-label">Informações</div>
+  <div class="sp-info">
+    <div class="sp-info-row"><span class="sp-ico">🕐</span><div><div class="sp-lbl">Horário</div><div class="sp-val">Dom–Seg · 18h às 23h30</div></div></div>
+    <div class="sp-info-row"><span class="sp-ico">📍</span><div><div class="sp-lbl">Endereço</div><div class="sp-val"><a href="https://www.google.com/maps/search/?api=1&query=Av.+Winston+Churchill,+1005,+Londrina" target="_blank">Av. Winston Churchill, 1005 — Londrina PR</a></div></div></div>
+    <div class="sp-info-row"><span class="sp-ico">📞</span><div><div class="sp-lbl">Telefone</div><div class="sp-val"><a href="tel:4330281010">(43) 3028-1010</a></div></div></div>
+    <div class="sp-info-row"><span class="sp-ico">💬</span><div><div class="sp-lbl">WhatsApp</div><div class="sp-val"><a href="https://api.whatsapp.com/send?l=pt&phone=5543999410020" target="_blank">(43) 99941-0020</a></div></div></div>
+  </div>
+  <a href="http://www.pratodigital.com.br/piubella" target="_blank" class="sp-cta" id="spCta">Peça Online →</a>
+</div>
+
+<section id="hero">
+  <div class="hero-l">
+    <div class="hero-eyebrow"><div class="ey-line"></div><span class="ey-text">Londrina, Paraná · Desde 2004</span></div>
+    <h1 class="hero-h1">Piu<br>Bella<em>a verdadeira pizza</em></h1>
+    <hr class="hero-hr">
+    <p class="hero-p">Massa artesanal, ingredientes selecionados e forno a lenha — servidos com o carinho de uma família italiana há mais de 20 anos.</p>
+    <div class="hero-btns">
+      <a href="#menu" class="btn-dark">Ver o cardápio</a>
+      <a href="http://www.pratodigital.com.br/piubella" target="_blank" class="btn-ghost">Pedido online</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="st-val">20+</div><div class="st-key">Anos de história</div></div>
+      <div><div class="st-val">50+</div><div class="st-key">Sabores no cardápio</div></div>
+      <div><div class="st-val">★ 4,6</div><div class="st-key">Avaliação média</div></div>
+    </div>
+  </div>
+  <div class="hero-r">
+    <div class="hero-bg-img"></div>
+    <div class="hero-pizza-photo">
+      <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=900&q=85&fit=crop&crop=center" alt="Pizza artesanal Piu Bella">
+    </div>
+    <div class="hero-r-label"><p>Domingo a segunda<br>18h às 23h30</p></div>
+    <div class="badge-spin">
+      <svg viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="46" cy="46" r="44" fill="#c47c14"/>
+        <path id="arc" d="M46,46 m-32,0 a32,32 0 1,1 64,0 a32,32 0 1,1 -64,0" fill="none"/>
+        <text font-size="8.5" font-family="DM Sans,sans-serif" font-weight="500" fill="#1a1108" letter-spacing="4.2">
+          <textPath href="#arc">ARTESANAL · LONDRINA · 2004 ·</textPath>
+        </text>
+      </svg>
+      <div class="badge-center">★<small>4,6</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker"><div class="ticker-t">
+  <span class="tick">Ingredientes <b>frescos</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Forno <b>a lenha</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Massa <b>artesanal</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Família italiana <b>desde 2004</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Entrega <b>rápida</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Pedido <b>online</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Londrina <b>PR</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Ingredientes <b>frescos</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Forno <b>a lenha</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Massa <b>artesanal</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Família italiana <b>desde 2004</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Entrega <b>rápida</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Pedido <b>online</b> <span class="tick-star">✦</span></span>
+  <span class="tick">Londrina <b>PR</b> <span class="tick-star">✦</span></span>
+</div></div>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="menu-top sr"><div><div class="s-tag">Cardápio</div><h2 class="s-h2">Nossas <em>pizzas</em></h2></div><p class="menu-note">Passe o mouse sobre cada item para explorar</p></div>
+  <div class="menu-list">
+    <div class="pizza-row sr d1"><div class="pizza-row-img"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=560&q=80&fit=crop&crop=center" alt="Margherita"></div><div class="pizza-row-body"><div class="pizza-row-tag">Clássica italiana</div><div class="pizza-row-name">Margherita Especial</div><div class="pizza-row-desc">Molho artesanal de tomate San Marzano, mussarela de búfala fresca, folhas de manjericão e fio de azeite extravirgem importado.</div><div class="pizza-row-badge">★ Mais pedida</div></div><div class="pizza-row-side"><div class="pizza-row-price">R$ 48,90 <small>tamanho único</small></div><button class="pizza-row-btn">+</button></div></div>
+    <div class="pizza-row sr d2"><div class="pizza-row-img"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=560&q=80&fit=crop&crop=center" alt="Premium"></div><div class="pizza-row-body"><div class="pizza-row-tag">Sugestão da casa</div><div class="pizza-row-name">Piu Bella Premium</div><div class="pizza-row-desc">Nossa receita exclusiva com ingredientes selecionados pelo chef, catupiry artesanal e combinação de sabores que define a casa desde 2004.</div></div><div class="pizza-row-side"><div class="pizza-row-price">R$ 59,90 <small>tamanho único</small></div><button class="pizza-row-btn">+</button></div></div>
+    <div class="pizza-row sr d3"><div class="pizza-row-img"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=560&q=80&fit=crop&crop=center" alt="Calabresa"></div><div class="pizza-row-body"><div class="pizza-row-tag">Tradicional</div><div class="pizza-row-name">Calabresa Artesanal</div><div class="pizza-row-desc">Calabresa defumada fatiada na hora, cebola caramelizada lentamente no azeite, mussarela derretida e toque de orégano fresco.</div></div><div class="pizza-row-side"><div class="pizza-row-price">R$ 44,90 <small>tamanho único</small></div><button class="pizza-row-btn">+</button></div></div>
+    <div class="pizza-row sr d1"><div class="pizza-row-img"><img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=560&q=80&fit=crop&crop=center" alt="Frango"></div><div class="pizza-row-body"><div class="pizza-row-tag">Especial</div><div class="pizza-row-name">Frango com Catupiry</div><div class="pizza-row-desc">Frango desfiado temperado com ervas frescas, generosa camada de catupiry cremoso, mussarela extra e toque de páprica defumada.</div></div><div class="pizza-row-side"><div class="pizza-row-price">R$ 52,90 <small>tamanho único</small></div><button class="pizza-row-btn">+</button></div></div>
+    <div class="pizza-row sr d2"><div class="pizza-row-img"><img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=560&q=80&fit=crop&crop=center" alt="Portuguesa"></div><div class="pizza-row-body"><div class="pizza-row-tag">Gourmet</div><div class="pizza-row-name">Portuguesa Deluxe</div><div class="pizza-row-desc">Presunto artesanal, ovos caipiras, pimentão tricolor, cebola roxa, azeitonas portuguesas e mussarela premium.</div></div><div class="pizza-row-side"><div class="pizza-row-price">R$ 55,90 <small>tamanho único</small></div><button class="pizza-row-btn">+</button></div></div>
+    <div class="pizza-row sr d3"><div class="pizza-row-img"><img src="https://images.unsplash.com/photo-1548369937-47519962c11a?w=560&q=80&fit=crop&crop=center" alt="Chocolate"></div><div class="pizza-row-body"><div class="pizza-row-tag">Doce</div><div class="pizza-row-name">Chocolate Especial</div><div class="pizza-row-desc">Chocolate belga meio amargo, morangos frescos laminados, creme de avelã e massa especial levemente adocicada.</div></div><div class="pizza-row-side"><div class="pizza-row-price">R$ 46,90 <small>tamanho único</small></div><button class="pizza-row-btn">+</button></div></div>
+  </div>
+  <div class="menu-mobile">
+    <div class="pizza-card-m"><div class="pizza-card-m-img"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&q=80&fit=crop" alt="Margherita"></div><div class="pizza-card-m-info"><div class="pizza-card-m-tag">Clássica · Mais pedida</div><div class="pizza-card-m-name">Margherita Especial</div><div class="pizza-card-m-desc">Molho artesanal, mussarela de búfala, manjericão fresco e azeite extravirgem</div><div class="pizza-card-m-foot"><span class="pizza-card-m-price">R$ 48,90</span><button class="pizza-row-btn">+</button></div></div></div>
+    <div class="pizza-card-m"><div class="pizza-card-m-img"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=700&q=80&fit=crop" alt="Premium"></div><div class="pizza-card-m-info"><div class="pizza-card-m-tag">Sugestão da casa</div><div class="pizza-card-m-name">Piu Bella Premium</div><div class="pizza-card-m-desc">Receita exclusiva com ingredientes selecionados e catupiry artesanal</div><div class="pizza-card-m-foot"><span class="pizza-card-m-price">R$ 59,90</span><button class="pizza-row-btn">+</button></div></div></div>
+    <div class="pizza-card-m"><div class="pizza-card-m-img"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=700&q=80&fit=crop" alt="Calabresa"></div><div class="pizza-card-m-info"><div class="pizza-card-m-tag">Tradicional</div><div class="pizza-card-m-name">Calabresa Artesanal</div><div class="pizza-card-m-desc">Calabresa defumada, cebola caramelizada e mussarela</div><div class="pizza-card-m-foot"><span class="pizza-card-m-price">R$ 44,90</span><button class="pizza-row-btn">+</button></div></div></div>
+    <div class="pizza-card-m"><div class="pizza-card-m-img"><img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=700&q=80&fit=crop" alt="Frango"></div><div class="pizza-card-m-info"><div class="pizza-card-m-tag">Especial</div><div class="pizza-card-m-name">Frango com Catupiry</div><div class="pizza-card-m-desc">Frango desfiado, catupiry cremoso e mussarela extra</div><div class="pizza-card-m-foot"><span class="pizza-card-m-price">R$ 52,90</span><button class="pizza-row-btn">+</button></div></div></div>
+    <div class="pizza-card-m"><div class="pizza-card-m-img"><img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=700&q=80&fit=crop" alt="Portuguesa"></div><div class="pizza-card-m-info"><div class="pizza-card-m-tag">Gourmet</div><div class="pizza-card-m-name">Portuguesa Deluxe</div><div class="pizza-card-m-desc">Presunto, ovo, pimentão, cebola e azeitonas portuguesas</div><div class="pizza-card-m-foot"><span class="pizza-card-m-price">R$ 55,90</span><button class="pizza-row-btn">+</button></div></div></div>
+  </div>
+</section>
+
+<div id="quote">
+  <p class="q-text sr">"Surpreender nossos clientes com uma prazerosa alimentação — essa é a nossa missão desde o primeiro dia."</p>
+  <p class="q-src sr d1">Família Piu Bella · Londrina, 2004</p>
+</div>
+
+<section id="story">
+  <div class="story-l sr">
+    <div class="story-year-bg">2004</div>
+    <div class="story-head"><div class="s-tag">Nossa história</div><h2 class="story-h2">Uma família,<br>uma paixão</h2></div>
+    <div class="story-photo">
+      <div class="story-photo-frame"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=80&fit=crop&crop=center" alt="Ambiente"></div>
+      <div class="story-photo-cap">Forno a Lenha · Londrina</div>
+    </div>
+  </div>
+  <div class="story-r sr d2">
+    <p class="story-intro">Uma empresa familiar que nasceu com um sonho — e cresceu junto com Londrina por mais de duas décadas.</p>
+    <p class="story-body">A Pizzaria Piu Bella abriu suas portas em <strong>junho de 2004</strong> com um propósito claro: fazer pizzas de verdade. Com ingredientes de qualidade, preparo artesanal e o calor genuíno de quem ama o que faz.</p>
+    <p class="story-body">Mais de 20 anos depois, somos parte da rotina e das memórias de muitas famílias londrinenses. Nosso cardápio cresce, nossos colaboradores são valorizados, e cada pizza que sai do forno carrega a mesma dedicação do primeiro dia.</p>
+    <p class="story-body"><strong>Missão:</strong> Surpreender nossos clientes com uma prazerosa alimentação.<br><strong>Valores:</strong> Foco no cliente, alegria, ética e simplicidade.</p>
+    <div class="diff-grid">
+      <div class="diff sr d1"><span class="diff-ico">🌿</span><h4>Ingredientes frescos</h4><p>Selecionados diariamente para garantir sabor e qualidade em cada pizza</p></div>
+      <div class="diff sr d2"><span class="diff-ico">🔥</span><h4>Forno a lenha</h4><p>Temperatura ideal para uma massa crocante por fora e macia por dentro</p></div>
+      <div class="diff sr d3"><span class="diff-ico">🤌</span><h4>Massa artesanal</h4><p>Receita exclusiva da casa preparada com dedicação todos os dias</p></div>
+      <div class="diff sr d4"><span class="diff-ico">🏠</span><h4>Ambiente aconchegante</h4><p>O espaço certo para reunir família e amigos com conforto e alegria</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="reviews-top sr">
+    <div><div class="s-tag">Avaliações</div><h2 class="s-h2">O que nossos<br><em>clientes dizem</em></h2></div>
+    <div class="reviews-score"><div class="rs-num">4,6</div><div class="rs-stars">★★★★⯪</div><div class="rs-label">Avaliação média · Google</div></div>
+  </div>
+  <div class="rv-grid">
+    <div class="rv sr d1"><div class="rv-stars">★★★★★</div><span class="rv-open">"</span><p class="rv-text">Melhor pizzaria de Londrina, sem dúvida. A massa é perfeita, ingredientes sempre frescos e o atendimento é excelente. Somos clientes há mais de 10 anos e nunca decepcionou.</p><div class="rv-footer"><div class="rv-av">M</div><div><div class="rv-name">Marcos Oliveira</div><div class="rv-detail">Cliente desde 2014</div></div></div></div>
+    <div class="rv sr d2"><div class="rv-stars">★★★★★</div><span class="rv-open">"</span><p class="rv-text">A pizza Piu Bella Premium é simplesmente incrível. Combinação de sabores perfeita, massa fininha e crocante. O forno a lenha faz toda a diferença no resultado final.</p><div class="rv-footer"><div class="rv-av">A</div><div><div class="rv-name">Ana Paula Santos</div><div class="rv-detail">Google · 2025</div></div></div></div>
+    <div class="rv sr d3"><div class="rv-stars">★★★★★</div><span class="rv-open">"</span><p class="rv-text">Pedimos toda semana e nunca cansa. Qualidade constante, entrega sempre no prazo e as pizzas chegam quentinhas. Ótimo custo-benefício para a qualidade servida.</p><div class="rv-footer"><div class="rv-av">R</div><div><div class="rv-name">Roberto Lima</div><div class="rv-detail">Pedido Online · 2025</div></div></div></div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="cta-l sr">
+    <div class="s-tag">Peça agora</div>
+    <h2 class="cta-h2">Pronta para<br><em>você.</em></h2>
+    <p class="cta-p">De domingo a segunda, das 18h às 23h30. Faça seu pedido online ou ligue diretamente.</p>
+    <div class="cta-btns">
+      <a href="http://www.pratodigital.com.br/piubella" target="_blank" class="btn-red">Fazer pedido online</a>
+      <a href="tel:4330281010" class="btn-gl">(43) 3028-1010</a>
+    </div>
+  </div>
+  <div class="cta-r sr d2">
+    <div class="info-r">
+      <div class="info-row"><div class="info-lbl">Horário</div><div class="info-val">Segunda a Domingo<br>18h às 23h30</div></div>
+      <div class="info-row"><div class="info-lbl">Endereço</div><div class="info-val"><a href="https://www.google.com/maps/search/?api=1&query=Av.+Winston+Churchill,+1005,+Londrina,+Paraná" target="_blank">Av. Winston Churchill, 1005<br>Londrina – Paraná<br><small>Clique para Ver Mais</small></a></div></div>
+      <div class="info-row"><div class="info-lbl">Telefone</div><div class="info-val"><a href="tel:4330281010">(43) 3028-1010</a></div></div>
+      <div class="info-row"><div class="info-lbl">WhatsApp</div><div class="info-val"><a href="https://api.whatsapp.com/send?l=pt&phone=5543999410020" target="_blank">(43) 99941-0020</a></div></div>
+      <div class="info-row"><div class="info-lbl">E-mail</div><div class="info-val"><a href="/cdn-cgi/l/email-protection#5121382433343d3d3021382b2b3023383011393e253c30383d7f323e3c"><span class="__cf_email__" data-cfemail="65150c100700090904150c1f1f04170c04250d0a1108040c094b060a08">[email&#160;protected]</span></a></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="#hero" class="f-logo">Piu <span>Bella</span></a>
+  <p class="f-copy">© 2025 Pizzaria Piu Bella · Londrina, Paraná</p>
+  <a href="http://www.pratodigital.com.br/piubella" target="_blank" class="f-link">Peça Online →</a>
+</footer>
+
+<a href="https://api.whatsapp.com/send?l=pt&phone=5543999410020" target="_blank" class="wa" title="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+const navEl  = document.getElementById('nav');
+const panel  = document.getElementById('side-panel');
+const hamBtn = document.getElementById('hamBtn');
+const spClose = document.getElementById('spClose');
+const overlay = document.getElementById('overlay');
+let isOpen = false;
+
+window.addEventListener('scroll', () => {
+  if (!isOpen) navEl.classList.toggle('stuck', window.scrollY > 70);
+});
+
+function openPanel() {
+  isOpen = true;
+  navEl.classList.remove('stuck', 'light');
+  navEl.classList.add('panel-open');
+  panel.classList.add('open');
+  overlay.classList.add('active');
+  document.body.classList.add('panel-active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePanel() {
+  if (!isOpen) return;
+  isOpen = false;
+  navEl.classList.remove('panel-open');
+  panel.classList.remove('open');
+  overlay.classList.remove('active');
+  document.body.classList.remove('panel-active');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    if (!isOpen) navEl.classList.toggle('stuck', window.scrollY > 70);
+  }, 560);
+}
+
+hamBtn.addEventListener('click', () => isOpen ? closePanel() : openPanel());
+spClose.addEventListener('click', closePanel);
+overlay.addEventListener('click', closePanel);
+document.querySelectorAll('.sp-link, #spLogoLink, #spCta').forEach(el => el.addEventListener('click', closePanel));
+
+const ctaEl = document.getElementById('cta');
+if (ctaEl) new IntersectionObserver(entries => {
+  entries.forEach(e => { if (!isOpen) navEl.classList.toggle('light', e.isIntersecting); });
+}, { threshold: 0.3 }).observe(ctaEl);
+
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.sr').forEach(el => ro.observe(el));
+</script>
+</body>
+</html>
